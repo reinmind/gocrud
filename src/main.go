@@ -12,6 +12,7 @@ import (
 
 func main() {
 
+	redi := redicli.Redicli{}
 	r := gin.Default()
 
 	r.GET("/db/ping", func(c *gin.Context) {
@@ -22,7 +23,7 @@ func main() {
 	})
 
 	r.GET("/redis/ping", func(c *gin.Context) {
-		message := redicli.Ping()
+		message := redi.Ping()
 		c.JSON(http.StatusOK, gin.H{
 			"value": message,
 		})
@@ -45,8 +46,8 @@ func main() {
 	r.GET("/redis/test", func(ctx *gin.Context) {
 		keyQuery := ctx.Query("keyQuery")
 		valQuery := ctx.Query("valQuery")
-		redicli.Set(keyQuery, valQuery)
-		valGot := redicli.Get(keyQuery)
+		redi.Set(keyQuery, valQuery)
+		valGot := redi.Get(keyQuery)
 		success := valGot == valQuery
 		ctx.JSON(http.StatusOK, gin.H{
 			"success": success,

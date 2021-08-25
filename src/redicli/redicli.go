@@ -1,12 +1,12 @@
 package redicli
 
 import (
-	"fmt"
 	"github.com/go-redis/redis"
 	"log"
-	"os"
 	"time"
 )
+
+type Redicli struct{}
 
 var redisConfig = redis.Options{
 	Addr:     "localhost:6379",
@@ -24,20 +24,19 @@ func init() {
 }
 
 //Ping test connection
-func Ping() string {
-
+func (Redicli) Ping() string {
 	result, err := instance.Ping().Result()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "%v", err)
+		log.Fatalf("%v\n", err)
 	}
 	return result
 }
 
-func Set(key string, value interface{}) {
+func (Redicli) Set(key string, value interface{}) {
 	instance.Set(key, value, 6*time.Minute)
 }
 
-func Get(key string) string {
+func (Redicli) Get(key string) string {
 	get := instance.Get(key)
 	result, err := get.Result()
 	if err != nil {

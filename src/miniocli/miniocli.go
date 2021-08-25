@@ -25,6 +25,7 @@ func init() {
 		log.Printf("minio connected: %v", client)
 	}
 }
+
 func Conn() *minio.Client {
 	return client
 }
