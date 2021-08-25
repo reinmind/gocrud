@@ -7,31 +7,32 @@ import (
 	"gocrud/entity"
 	"gocrud/miniocli"
 	"gocrud/redicli"
+	"net/http"
 )
 
 func main() {
 
 	r := gin.Default()
 
-	r.GET("/ping/db", func(c *gin.Context) {
+	r.GET("/db/ping", func(c *gin.Context) {
 		m1 := query()
-		c.JSON(200, gin.H{
-			"value": dbcli.Response{"hello", 2, m1},
+		c.JSON(http.StatusOK, gin.H{
+			"value": dbcli.Response{Msg: "hello", Code: 2, Value: m1},
 		})
 	})
 
-	r.GET("/ping/redis", func(c *gin.Context) {
+	r.GET("/redis/ping", func(c *gin.Context) {
 		message := redicli.Ping()
-		c.JSON(200, gin.H{
+		c.JSON(http.StatusOK, gin.H{
 			"value": message,
 		})
 	})
 
 	r.GET("/ping/minio", func(context *gin.Context) {
-		client := miniocli.New()
+		client := miniocli.Conn()
 		buckets, err := client.ListBuckets(context)
 		if err != nil {
-			context.JSON(500, gin.H{
+			context.JSON(http.StatusInternalServerError, gin.H{
 				"message": err,
 			})
 		} else {
@@ -41,7 +42,20 @@ func main() {
 		}
 	})
 
-	err := r.Run()
+	r.GET("/redis/test", func(ctx *gin.Context) {
+		keyQuery := ctx.Query("keyQuery")
+		valQuery := ctx.Query("valQuery")
+		redicli.Set(keyQuery, valQuery)
+		valGot := redicli.Get(keyQuery)
+		success := valGot == valQuery
+		ctx.JSON(http.StatusOK, gin.H{
+			"success": success,
+			"value":   valGot,
+		})
+	})
+
+	// 启动gin服务
+	err := r.Run(":8080")
 	if err != nil {
 		_ = fmt.Errorf("%v", err)
 	}
@@ -50,7 +64,7 @@ func main() {
 
 //query get first tradeCount
 func query() entity.TradeCount {
-	connection := dbcli.New()
+	connection := dbcli.Conn()
 	// resultList := map[string]entity.TradeCount{}
 	result := entity.TradeCount{}
 	err := connection.Table("entity_trade_count").Take(&result).Error

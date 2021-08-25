@@ -9,24 +9,22 @@ import (
 
 var client *minio.Client
 
-func New() *minio.Client {
-	if client != nil {
-		return client
-	}
+func init() {
 	ep := "localhost:9000"
 	accessKey := "minio"
 	accessSecret := "minio123"
-	useSSL := false
 
-	c, err := minio.New(ep, &minio.Options{
+	client, err := minio.New(ep, &minio.Options{
 		Creds:  credentials.NewStaticV4(accessKey, accessSecret, ""),
-		Secure: useSSL,
+		Secure: false,
 	})
-	client = c
+
 	if err != nil {
 		log.Fatalln(err)
 	} else {
 		log.Printf("minio connected: %v", client)
 	}
+}
+func Conn() *minio.Client {
 	return client
 }

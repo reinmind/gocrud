@@ -3,7 +3,9 @@ package redicli
 import (
 	"fmt"
 	"github.com/go-redis/redis"
+	"log"
 	"os"
+	"time"
 )
 
 var redisConfig = redis.Options{
@@ -14,20 +16,32 @@ var redisConfig = redis.Options{
 
 var instance *redis.Client
 
-//conn get redis connection
-func conn() *redis.Client {
+//init get redis connection
+func init() {
 	if instance == nil {
 		instance = redis.NewClient(&redisConfig)
 	}
-	return instance
 }
 
 //Ping test connection
 func Ping() string {
-	RedisClient := conn()
-	result, err := RedisClient.Ping().Result()
+
+	result, err := instance.Ping().Result()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v", err)
+	}
+	return result
+}
+
+func Set(key string, value interface{}) {
+	instance.Set(key, value, 6*time.Minute)
+}
+
+func Get(key string) string {
+	get := instance.Get(key)
+	result, err := get.Result()
+	if err != nil {
+		log.Fatalln(err)
 	}
 	return result
 }

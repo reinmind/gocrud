@@ -1,5 +1,6 @@
 package entity
 
+// TradeCount 一个数据库实体
 type TradeCount struct {
 	MainId    string `gorm:"column:main_id"`
 	AreaCode  string `gorm:"column:area_code"`
