@@ -1,4 +1,4 @@
-package database
+package dbcli
 
 import "gocrud/entity"
 

@@ -1,4 +1,4 @@
-package redis
+package redicli
 
 import (
 	"fmt"
@@ -6,14 +6,20 @@ import (
 	"os"
 )
 
+var redisConfig = redis.Options{
+	Addr:     "localhost:6379",
+	Password: "",
+	DB:       0,
+}
+
+var instance *redis.Client
+
+//conn get redis connection
 func conn() *redis.Client {
-	redisConfig := redis.Options{
-		Addr:     "localhost:6379",
-		Password: "",
-		DB:       0,
+	if instance == nil {
+		instance = redis.NewClient(&redisConfig)
 	}
-	rdb := redis.NewClient(&redisConfig)
-	return rdb
+	return instance
 }
 
 //Ping test connection
