@@ -7,10 +7,14 @@ import (
 	"gocrud/entity"
 	"gocrud/miniocli"
 	"gocrud/redicli"
+	"gocrud/rpc"
 	"net/http"
 )
 
 func main() {
+
+	// 启动rpc服务器
+	go rpc.StartServer()
 
 	redi := redicli.Redicli{}
 	r := gin.Default()

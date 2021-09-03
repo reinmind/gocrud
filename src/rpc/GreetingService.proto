@@ -1,0 +1,19 @@
+syntax = "proto3";
+option go_package="gocrud/rpc";
+// request payload
+message HelloRequest {
+  string name = 1;
+  // define a strong typed list of string
+  repeated string hobbies = 2;
+}
+
+// response payload
+message HelloResponse{
+  string greeting = 1;
+}
+
+// define a service, a service can have multiple RPC operations
+service GreetingService{
+  // define operation
+  rpc greeting(HelloRequest) returns (HelloResponse);
+}
