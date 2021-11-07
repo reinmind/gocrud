@@ -3,12 +3,12 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"gocrud/dbcli"
-	"gocrud/entity"
-	"gocrud/miniocli"
-	"gocrud/redicli"
-	"gocrud/rpc"
 	"net/http"
+	"gocrud/cache"
+	"gocrud/entity"
+	"gocrud/fs"
+	"gocrud/rpc"
+	"gocrud/db"
 )
 
 func main() {
@@ -16,13 +16,13 @@ func main() {
 	// 启动rpc服务器
 	go rpc.StartServer()
 
-	redi := redicli.Redicli{}
+	redi := cache.Redicli{}
 	r := gin.Default()
 
 	r.GET("/db/ping", func(c *gin.Context) {
 		m1 := query()
 		c.JSON(http.StatusOK, gin.H{
-			"value": dbcli.Response{Msg: "hello", Code: 2, Value: m1},
+			"value": db.Response{Msg: "hello", Code: 2, Value: m1},
 		})
 	})
 
@@ -34,7 +34,7 @@ func main() {
 	})
 
 	r.GET("/ping/minio", func(context *gin.Context) {
-		client := miniocli.Conn()
+		client := fs.Conn()
 		buckets, err := client.ListBuckets(context)
 		if err != nil {
 			context.JSON(http.StatusInternalServerError, gin.H{
@@ -69,7 +69,7 @@ func main() {
 
 //query get first tradeCount
 func query() entity.TradeCount {
-	connection := dbcli.Conn()
+	connection := db.Conn()
 	// resultList := map[string]entity.TradeCount{}
 	result := entity.TradeCount{}
 	err := connection.Table("entity_trade_count").Take(&result).Error

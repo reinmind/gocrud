@@ -1,4 +1,4 @@
-package redicli
+package cache
 
 import (
 	"github.com/go-redis/redis"

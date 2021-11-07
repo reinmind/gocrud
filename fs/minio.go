@@ -1,4 +1,4 @@
-package miniocli
+package fs
 
 import (
 	"log"

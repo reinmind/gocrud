@@ -1,4 +1,4 @@
-package dbcli
+package db
 
 import "gorm.io/driver/mysql"
 import "gorm.io/gorm"
