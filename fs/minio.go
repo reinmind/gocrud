@@ -1,31 +1,33 @@
 package fs
 
 import (
+	_ "gocrud/config"
 	"log"
 
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
+	"github.com/spf13/viper"
 )
 
 var client *minio.Client
 
 func init() {
-	ep := "localhost:9000"
-	accessKey := "minio"
-	accessSecret := "minio123"
-
-	client, err := minio.New(ep, &minio.Options{
-		Creds:  credentials.NewStaticV4(accessKey, accessSecret, ""),
+	m := viper.GetStringMapString("minio")
+	var err error
+	client, err = minio.New(m["endpoint"], &minio.Options{
+		Creds:  credentials.NewStaticV4(m["access_key"], m["access_secret"], ""),
 		Secure: false,
 	})
 
 	if err != nil {
-		log.Fatalln(err)
-	} else {
-		log.Printf("minio connected: %v", client)
+		log.Fatalf("%v\n", err)
+		panic(err)
 	}
+
+	//log.Printf("minio configured! endpoint: %v access_key: %v access_secret: %v  \n", m["endpoint"], m["access_key"], m["access_secret"])
+
 }
 
-func Conn() *minio.Client {
+func GetClient() *minio.Client {
 	return client
 }

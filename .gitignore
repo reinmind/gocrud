@@ -1,1 +1,3 @@
 gocrud
+*.exe
+*.o

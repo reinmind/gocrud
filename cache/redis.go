@@ -1,23 +1,29 @@
 package cache
 
 import (
-	"github.com/go-redis/redis"
+	_ "gocrud/config"
 	"log"
 	"time"
+
+	"strconv"
+
+	"github.com/go-redis/redis"
+	"github.com/spf13/viper"
 )
 
+//Redicli redis client
 type Redicli struct{}
-
-var redisConfig = redis.Options{
-	Addr:     "localhost:6379",
-	Password: "",
-	DB:       0,
-}
 
 var instance *redis.Client
 
 //init get redis connection
 func init() {
+	configMap := viper.GetViper()
+	var redisConfig = redis.Options{
+		Addr:     configMap.GetString("redis.host") + ":" + strconv.Itoa(configMap.GetInt("redis.port")),
+		Password: configMap.GetString("redis.password"),
+		DB:       configMap.GetInt("redis.db"),
+	}
 	if instance == nil {
 		instance = redis.NewClient(&redisConfig)
 	}
@@ -27,15 +33,18 @@ func init() {
 func (Redicli) Ping() string {
 	result, err := instance.Ping().Result()
 	if err != nil {
-		log.Fatalf("%v\n", err)
+		log.Fatalf("%v", err)
 	}
 	return result
 }
 
+//Set set key value
 func (Redicli) Set(key string, value interface{}) {
+	//set cache default expire time
 	instance.Set(key, value, 6*time.Minute)
 }
 
+//Get get key value
 func (Redicli) Get(key string) string {
 	get := instance.Get(key)
 	result, err := get.Result()

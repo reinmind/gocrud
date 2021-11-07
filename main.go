@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"net/http"
 	"gocrud/cache"
+	"gocrud/db"
 	"gocrud/entity"
 	"gocrud/fs"
 	"gocrud/rpc"
-	"gocrud/db"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -34,7 +35,7 @@ func main() {
 	})
 
 	r.GET("/ping/minio", func(context *gin.Context) {
-		client := fs.Conn()
+		client := fs.GetClient()
 		buckets, err := client.ListBuckets(context)
 		if err != nil {
 			context.JSON(http.StatusInternalServerError, gin.H{
