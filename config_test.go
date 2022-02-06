@@ -11,7 +11,7 @@ import (
 )
 
 func TestConfig(t *testing.T) {
-	s := viper.GetString("port")
+	s := viper.GetString("server.port")
 	t.Logf(`port value: %v`, s)
 }
 

@@ -2,14 +2,14 @@ package main
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"gocrud/cache"
 	"gocrud/db"
 	"gocrud/entity"
 	"gocrud/fs"
 	"gocrud/rpc"
+	"log"
 	"net/http"
-
-	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -27,12 +27,25 @@ func main() {
 		})
 	})
 
-	r.GET("/redis/ping", func(c *gin.Context) {
+	ping := func(c *gin.Context) {
 		message := redi.Ping()
 		c.JSON(http.StatusOK, gin.H{
 			"value": message,
 		})
-	})
+	}
+	showContext := func(context *gin.Context) {
+		log.Printf(`context.Keys: %v\n`, context.Keys)
+		log.Printf(`context.Request: %v`, context.Request)
+
+		context.JSON(http.StatusOK, gin.H{"URL": context.Request.URL,
+			"requestURI": context.Request.RequestURI,
+			"method":     context.Request.Method,
+			"header":     context.Request.Header})
+	}
+
+	r.GET("/context/show", showContext)
+
+	r.GET("/redis/ping", ping)
 
 	r.GET("/ping/minio", func(context *gin.Context) {
 		client := fs.GetClient()

@@ -7,7 +7,7 @@ import (
 )
 
 func init() {
-	viper.SetDefault("port", "3000")
+	viper.SetDefault("server.port", "3000")
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(".")
